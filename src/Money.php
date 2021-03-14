@@ -265,6 +265,11 @@ final class Money {
     return $this->currency;
   }
 
+  // Magic methods
+  public function __toString(): string {
+    return $this->getAmount();
+  }
+
   /**
    * Validation of currency on second object. This one used for protect
    *   from operations on 2 different currencies that actually should be impossible

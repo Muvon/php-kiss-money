@@ -133,7 +133,7 @@ final class MoneyTest extends TestCase
     }
   }
 
-  public function testCannotAddSubDifferectCurrency() {
+  public function testCannotAddSubDifferentCurrency() {
     $usd = Money::fromAmount('1.03', 'USD');
     $xrp = Money::fromAmount('0.001', 'XRP');
 
@@ -143,7 +143,7 @@ final class MoneyTest extends TestCase
     }
   }
 
-  public function testCannotCompareDifferectCurrency() {
+  public function testCannotCompareDifferentCurrency() {
     $usd = Money::fromAmount('1.03', 'USD');
     $xrp = Money::fromAmount('0.001', 'XRP');
     $this->expectException(Exception::class);
@@ -192,6 +192,11 @@ final class MoneyTest extends TestCase
 
     $usd = Money::fromAmount('0.001', 'USD');
     $this->assertEquals(true, $usd->isZero());
+  }
+
+  public function testCanUseAsString() {
+    $usd = Money::fromAmount('0.01', 'USD');
+    $this->assertEquals('0.01', (string) $usd);
   }
 }
 
