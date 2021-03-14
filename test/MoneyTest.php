@@ -80,10 +80,12 @@ final class MoneyTest extends TestCase
     $Money = Money::fromAmount('1.05', 'USD');
     $this->assertInstanceOf(Money::class, $Money);
     $this->assertEquals('USD', $Money->getCurrency());
+    $this->assertEquals('1.05', $Money->getAmount());
 
     $Money = Money::fromValue(100, 'USD');
     $this->assertInstanceOf(Money::class, $Money);
     $this->assertEquals('USD', $Money->getCurrency());
+    $this->assertEquals('100', $Money->getValue());
   }
 
 

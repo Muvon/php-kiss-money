@@ -86,7 +86,7 @@ final class Money {
   public static function fromValue(string|int $value, string $currency): self {
     $config = static::getCurrencyConfig($currency);
     $Money = new Money('0', $currency, $config['fraction']);
-    $Money->amount = $Money->valueToAmount(strval($value));
+    $Money->value = strval($value);
     return $Money;
   }
 
