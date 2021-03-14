@@ -226,6 +226,10 @@ final class MoneyTest extends TestCase
     $this->assertEquals(true, $usd->isZero());
   }
 
+  public function testHasCurrency() {
+    $this->assertEquals(true, Money::hasCurrency('XRP'));
+    $this->assertEquals(false, Money::hasCurrency('TTT'));
+  }
   public function testCanUseAsString() {
     $usd = Money::fromAmount('0.01', 'USD');
     $this->assertEquals('0.01 USD', (string) $usd);

@@ -177,4 +177,5 @@ This library has no other code dependencies and kept as simple as possible.
 - [x] Is positive
 - [x] Is negative
 - [x] Is zero
+- [x] Has currency
 - [x] Can use as string

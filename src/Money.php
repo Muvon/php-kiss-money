@@ -302,6 +302,16 @@ final class Money {
     return $this->currency;
   }
 
+  /**
+   * Check if we have support for that currency
+   *
+   * @param string $currency
+   * @return bool
+   */
+  public static function hasCurrency(string $currency): bool {
+    return isset(static::$currency_map[$currency]);
+  }
+
   // Magic methods
   public function __toString(): string {
     return $this->getAmount() . ' ' . $this->currency;
