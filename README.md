@@ -148,6 +148,7 @@ This library has no other code dependencies and kept as simple as possible.
 
 ## Test coverage
 
+- [x] Can create multiple
 - [x] Cannot create no config
 - [x] Add sub operations
 - [x] Mul div operations

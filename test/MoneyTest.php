@@ -75,7 +75,8 @@ final class MoneyTest extends TestCase
       ]
     ]);
   }
-  public function testCanCreate() {
+
+  public function testCanCreateSingle() {
     $Money = Money::fromAmount('1.05', 'USD');
     $this->assertInstanceOf(Money::class, $Money);
     $this->assertEquals('USD', $Money->getCurrency());
@@ -84,6 +85,27 @@ final class MoneyTest extends TestCase
     $this->assertInstanceOf(Money::class, $Money);
     $this->assertEquals('USD', $Money->getCurrency());
   }
+
+
+  public function testCanCreateMultiple() {
+    $amounts = ['1.05', '10'];
+    $moneys = $Money = Money::fromAmounts($amounts, 'USD');
+    $this->assertEquals(sizeof($amounts), sizeof($moneys));
+    foreach ($moneys as $k => $Money) {
+      $this->assertEquals(Money::fromAmount($amounts[$k], 'USD'), $Money);
+      $this->assertInstanceOf(Money::class, $Money);
+    }
+
+    $values = ['100', '350'];
+    $moneys = $Money = Money::fromValues($values, 'USD');
+    $this->assertEquals(sizeof($values), sizeof($moneys));
+    foreach ($moneys as $k => $Money) {
+      $this->assertEquals(Money::fromValue($values[$k], 'USD'), $Money);
+      $this->assertInstanceOf(Money::class, $Money);
+    }
+
+  }
+
 
   public function testCannotCreateNoConfig() {
     $this->expectException('Exception');

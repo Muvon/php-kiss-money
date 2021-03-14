@@ -62,6 +62,19 @@ final class Money {
   }
 
   /**
+   * Create list of Money objects from list of amounts
+   *
+   * @param array $amounts
+   * @param string $currency
+   * @return array
+   */
+  public static function fromAmounts(array $amounts, string $currency): array {
+    return array_map(function($amount) use ($currency) {
+      return static::fromAmount($amount, $currency);
+    }, $amounts);
+  }
+
+  /**
    * Create object from minor amount (aka value)
    *
    * @param string|int $value
@@ -74,6 +87,18 @@ final class Money {
     $Money->amount = $Money->valueToAmount(strval($value));
     return $Money;
   }
+
+  /**
+   * Create list of Money objects from list of minor amounts (values)
+   *
+   * @param array $values
+   * @param string $currency
+   * @return array
+   */
+  public static function fromValues(array $values, string $currency): array {
+    return array_map(function($value) use ($currency) {
+      return static::fromValue($value, $currency);
+    }, $values);  }
 
   /**
    * Get currency config that we set with init method
@@ -295,7 +320,7 @@ final class Money {
   }
 
   /**
-   * Convert value (minor amount) to amount 
+   * Convert value (minor amount) to amount
    * Used only for internal logic
    *
    * @param string $value
