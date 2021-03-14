@@ -1,0 +1,198 @@
+<?php declare(strict_types=1);
+use PHPUnit\Framework\TestCase;
+use KISS\Money;
+
+final class MoneyTest extends TestCase
+{
+  protected $add_sub_ops = [
+    'add' => [
+      [['1.03', 'USD'], ['3.05', 'USD'], ['4.08', '408']],
+      [['1.004', 'XRP'], ['0.000001', 'XRP'], ['1.004001', '1004001']],
+    ],
+    'sub' => [
+      [['1.03', 'USD'], ['3.05', 'USD'], ['-2.02', '-202']],
+      [['1.004', 'XRP'], ['0.000001', 'XRP'], ['1.003999', '1003999']],
+    ]
+  ];
+
+  protected $mul_div_ops = [
+    'mul' => [
+      [['1.03', 'USD'], '1.3', ['1.33', '133']],
+      [['1.004', 'XRP'], '1.24', ['1.244960', '1244960']],
+      [['1.004', 'XRP'], '3', ['3.012000', '3012000']],
+      [['1.004', 'XRP'], '1000', ['1004.000000', '1004000000']],
+    ],
+    'div' => [
+      [['1.03', 'USD'], '1.43', ['0.72', '72']],
+      [['1.004', 'XRP'], '1.22', ['0.822950', '822950']],
+      [['1.004', 'XRP'], '2', ['0.502000', '502000']],
+      [['1.004', 'XRP'], '100000', ['0.000010', '10']],
+      [['1.004', 'XRP'], '10000000', ['0.000000', '0']],
+    ]
+  ];
+
+  protected $cmp_ops = [
+    'eq' => [
+      [['1.03', 'USD'], ['1.03', 'USD']],
+      [['1.004', 'XRP'], ['1.004', 'XRP']],
+      [['1.004', 'XRP'], ['1.004', 'XRP']],
+    ],
+    'ne' => [
+      [['1.03', 'USD'], ['1', 'USD']],
+      [['1.004', 'XRP'], ['534', 'XRP']],
+      [['1.004', 'XRP'], ['0.00001', 'XRP']],
+    ],
+    'gt' => [
+      [['1.13', 'USD'], ['1.03', 'USD']],
+      [['3004', 'XRP'], ['1.004', 'XRP']],
+      [['1.404', 'XRP'], ['1.004', 'XRP']],
+    ],
+    'ge' => [
+      [['1.13', 'USD'], ['1.03', 'USD']],
+      [['1.004', 'XRP'], ['1.004', 'XRP']],
+      [['1.005', 'XRP'], ['1.004', 'XRP']],
+    ],
+    'lt' => [
+      [['0.9', 'USD'], ['1.03', 'USD']],
+      [['1.003', 'XRP'], ['1.004', 'XRP']],
+      [['1', 'XRP'], ['1.004', 'XRP']],
+    ],
+    'le' => [
+      [['0.9', 'USD'], ['1.03', 'USD']],
+      [['1.004', 'XRP'], ['1.004', 'XRP']],
+      [['1', 'XRP'], ['1.004', 'XRP']],
+    ],
+  ];
+
+  public function setUp(): void {
+    parent::setUp();
+    Money::init([
+      'USD' => [
+        'fraction' => 2,
+      ],
+      'XRP' => [
+        'fraction' => 6
+      ]
+    ]);
+  }
+  public function testCanCreate() {
+    $Money = Money::fromAmount('1.05', 'USD');
+    $this->assertInstanceOf(Money::class, $Money);
+    $this->assertEquals('USD', $Money->getCurrency());
+
+    $Money = Money::fromValue(100, 'USD');
+    $this->assertInstanceOf(Money::class, $Money);
+    $this->assertEquals('USD', $Money->getCurrency());
+  }
+
+  public function testCannotCreateNoConfig() {
+    $this->expectException('Exception');
+    Money::fromAmount('2.03', 'EUR');
+
+    $this->expectException('Exception');
+    Money::fromValue('403', 'EUR');
+  }
+
+  public function testAddSubOperations() {
+    foreach ($this->add_sub_ops as $operation => $tests) {
+      foreach ($tests as $test) {
+        $left = Money::fromAmount(...$test[0]);
+        $right = Money::fromAmount(...$test[1]);
+        $result = $left->$operation($right);
+
+        $this->assertInstanceOf(Money::class, $result);
+        $this->assertEquals($test[2][0], $result->getAmount());
+        $this->assertEquals($test[2][1], $result->getValue());
+      }
+    }
+  }
+
+  public function testMulDivOperations() {
+    foreach ($this->mul_div_ops as $operation => $tests) {
+      foreach ($tests as $test) {
+        $left = Money::fromAmount(...$test[0]);
+        $result = $left->$operation($test[1]);
+
+        $this->assertInstanceOf(Money::class, $result);
+        $this->assertEquals($test[2][0], $result->getAmount());
+        $this->assertEquals($test[2][1], $result->getValue());
+      }
+    }
+  }
+
+  public function testCmpOperations() {
+    foreach ($this->cmp_ops as $operation => $tests) {
+      foreach ($tests as $test) {
+        $left = Money::fromAmount(...$test[0]);
+        $right = Money::fromAmount(...$test[1]);
+        $result = $left->$operation($right);
+
+        $this->assertIsBool($result);
+        $this->assertEquals(true, $result);
+      }
+    }
+  }
+
+  public function testCannotAddSubDifferectCurrency() {
+    $usd = Money::fromAmount('1.03', 'USD');
+    $xrp = Money::fromAmount('0.001', 'XRP');
+
+    foreach (['add', 'sub'] as $op) {
+      $this->expectException(Exception::class);
+      $usd->$op($xrp);
+    }
+  }
+
+  public function testCannotCompareDifferectCurrency() {
+    $usd = Money::fromAmount('1.03', 'USD');
+    $xrp = Money::fromAmount('0.001', 'XRP');
+    $this->expectException(Exception::class);
+    $usd->eq($xrp);
+
+    foreach (['eq', 'ne', 'ge', 'gt', 'le', 'lt'] as $op) {
+      $this->expectException(Exception::class);
+      $usd->$op($xrp);
+    }
+  }
+
+  public function testIsPositive() {
+    $usd = Money::fromAmount('1.03', 'USD');
+    $this->assertEquals(true, $usd->isPositive());
+
+    $usd = Money::fromAmount('-1.03', 'USD');
+    $this->assertEquals(false, $usd->isPositive());
+
+    $usd = Money::fromAmount('0', 'USD');
+    $this->assertEquals(true, $usd->isPositive());
+  }
+
+  public function testIsNegative() {
+    $usd = Money::fromAmount('1.03', 'USD');
+    $this->assertEquals(false, $usd->isNegative());
+
+    $usd = Money::fromAmount('-1.03', 'USD');
+    $this->assertEquals(true, $usd->isNegative());
+
+    $usd = Money::fromAmount('0', 'USD');
+    $this->assertEquals(false, $usd->isNegative());
+  }
+
+  public function testIsZero() {
+    $usd = Money::fromAmount('1.03', 'USD');
+    $this->assertEquals(false, $usd->isZero());
+
+    $usd = Money::fromAmount('-1.03', 'USD');
+    $this->assertEquals(false, $usd->isZero());
+
+    $usd = Money::fromAmount('0', 'USD');
+    $this->assertEquals(true, $usd->isZero());
+
+    $usd = Money::fromAmount('0.00', 'USD');
+    $this->assertEquals(true, $usd->isZero());
+
+    $usd = Money::fromAmount('0.001', 'USD');
+    $this->assertEquals(true, $usd->isZero());
+  }
+}
+
+
