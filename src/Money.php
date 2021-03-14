@@ -29,6 +29,8 @@ final class Money {
       throw new \Exception('Unknown currency: ' . $currency);
     }
     assert(isset(static::$currency_map[$currency]['fraction']));
+    assert(is_int(static::$currency_map[$currency]['fraction']));
+    assert(static::$currency_map[$currency]['fraction'] >= 0);
 
     $this->currency = $currency;
     $this->fraction = $fraction;
