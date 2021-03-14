@@ -48,6 +48,23 @@ Money::init($config);
 
 ### Create from amount of currency
 
+You can create object using amount or value (aka minor amount) as single instance and also as from list of instances (array);
+
+Look at example usage below to understand how you can create objects.
+
+```php
+$list = Money::fromAmounts(['1.01', '2.03'], 'USD');
+// Dumps array of Money objects created from amounts
+var_dump($list);
+
+// Dumps single object from amount
+var_dump(Money::fromAmount('1.01', 'USD'));
+
+// You can do almost the same just from minor amount
+// Using method fromValue and fromValues
+// But passing minor amounts to them
+```
+
 ### Mathematic operations
 
 Available operations with 2 objects of money - add and sub.
