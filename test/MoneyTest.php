@@ -108,6 +108,14 @@ final class MoneyTest extends TestCase
 
   }
 
+  public function testCanCreateZero() {
+    $money1 = Money::fromAmount('0', 'USD');
+    $money2 = Money::zero('USD');
+    $this->assertInstanceOf(Money::class, $money2);
+    $this->assertEquals($money1, $money2);
+  }
+
+
 
   public function testCannotCreateNoConfig() {
     $this->expectException('Exception');

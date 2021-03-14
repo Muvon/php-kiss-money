@@ -84,10 +84,20 @@ final class Money {
    * @return self
    */
   public static function fromValue(string|int $value, string $currency): self {
-    $config = static::getCurrencyConfig($currency);
-    $Money = new Money('0', $currency, $config['fraction']);
+    $Money = static::zero($currency);
     $Money->value = strval($value);
     return $Money;
+  }
+
+  /**
+   * Create zero value object
+   *
+   * @param string $currency
+   * @return self
+   */
+  public static function zero(string $currency): self {
+    $config = static::getCurrencyConfig($currency);
+    return new Money('0', $currency, $config['fraction']);
   }
 
   /**
