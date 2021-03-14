@@ -5,7 +5,7 @@ KISS implementation of Money manipulation with configuring currencies byself
 ## Simple usage
 
 ```php
-use KISS\Money;
+use Muvon\KISS\Money;
 Money::init([
   'USD' => [
     'fraction' => 2
@@ -34,7 +34,7 @@ To do this just invoke Money::init() method with passed config to it before star
 Example of initializing the object:
 
 ```php
-use KISS\Money;
+use Muvon\KISS\Money;
 $config = [
   'USD' => [
     'fraction' => 2

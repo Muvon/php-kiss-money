@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace KISS;
+namespace Muvon\KISS;
 final class Money {
   /**
    * @property string $value

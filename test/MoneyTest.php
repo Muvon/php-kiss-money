@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
-use KISS\Money;
+use Muvon\KISS\Money;
 
 final class MoneyTest extends TestCase
 {

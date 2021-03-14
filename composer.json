@@ -1,6 +1,6 @@
 {
-  "name": "kiss/money",
-  "description": "KISS implementation of MOoney manipuliation logic",
+  "name": "muvon/kiss-money",
+  "description": "KISS implementation of Money manipuliation logic",
   "keywords": [
     "money",
     "currency",
@@ -23,7 +23,7 @@
   },
   "autoload": {
     "psr-4": {
-      "KISS\\": "src/"
+      "Muvon\\KISS\\": "src/"
     }
   }
 }
