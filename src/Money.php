@@ -304,7 +304,7 @@ final class Money {
 
   // Magic methods
   public function __toString(): string {
-    return $this->getAmount();
+    return $this->getAmount() . ' ' . $this->currency;
   }
 
   /**

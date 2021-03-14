@@ -228,7 +228,7 @@ final class MoneyTest extends TestCase
 
   public function testCanUseAsString() {
     $usd = Money::fromAmount('0.01', 'USD');
-    $this->assertEquals('0.01', (string) $usd);
+    $this->assertEquals('0.01 USD', (string) $usd);
   }
 }
 
