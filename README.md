@@ -199,7 +199,10 @@ This library has no other code dependencies and kept as simple as possible.
 - [x] Cannot create no config
 - [x] Add sub operations
 - [x] Mul div operations
+- [x] Rate calculation
 - [x] Convert to another currency
+- [x] Cannot convert same currency
+- [x] Result is immutable
 - [x] Cmp operations
 - [x] Cannot add sub different currency
 - [x] Cannot compare different currency

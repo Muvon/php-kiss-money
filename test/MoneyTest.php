@@ -159,6 +159,15 @@ final class MoneyTest extends TestCase
     }
   }
 
+  public function testRateCalculation() {
+    $source = Money::fromAmount('0.5', 'USD');
+    $target = Money::fromAmount('400', 'USD');
+    $rate = Money::rate($source, $target, 'XRP');
+
+    $this->assertEquals('XRP', $rate->getCurrency());
+    $this->assertEquals('0.001250', $rate->getAmount());
+  }
+
   public function testConvertToAnotherCurrency() {
     foreach ($this->cnv_ops as $test) {
       $money = Money::fromAmount(...$test[0]);
