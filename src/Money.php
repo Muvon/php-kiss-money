@@ -282,7 +282,7 @@ final class Money {
   * @param string $currency
   * @return self
   */
-  public function rate(self $Total, self $Unit, string $currency): self {
+  public static function rate(self $Total, self $Unit, string $currency): self {
     if ($Total->getCurrency() !== $Unit->getCurrency()) {
       throw new Exception('Cannot get rate using different currencies');
     }
