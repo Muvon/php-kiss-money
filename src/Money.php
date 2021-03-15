@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
+
 namespace Muvon\KISS;
+
+use Exception;
+
 final class Money {
   /**
    * @property string $value
@@ -271,6 +275,29 @@ final class Money {
   }
 
   /**
+  * Detect rate using total price and unit price to wanted currency
+  *
+  * @param self $Total
+  * @param self $Unit
+  * @param string $currency
+  * @return self
+  */
+  public function rate(self $Total, self $Unit, string $currency): self {
+    if ($Total->getCurrency() !== $Unit->getCurrency()) {
+      throw new Exception('Cannot get rate using different currencies');
+    }
+
+    if ($Total->getCurrency() === $currency) {
+      throw new Exception('Cannot get rate to itself');
+    }
+
+    return Money::fromAmount(
+      bcdiv($Total->getValue(), $Unit->getValue(), static::$currency_map[$currency]['fraction']),
+      $currency
+    );
+  }
+
+  /**
    * Convert current currency value to another one
    * It creates new Money objectu using rate provides as argument
    *
@@ -282,7 +309,6 @@ final class Money {
     if ($this->currency === $Rate->getCurrency()) {
       throw new Exception('Cannot convert value of same currency to itself');
     }
-
     return static::fromAmount(
       bcmul($this->getAmount(), $Rate->getAmount(), $Rate->fraction),
       $Rate->getCurrency()
