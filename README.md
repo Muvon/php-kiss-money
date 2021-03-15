@@ -96,6 +96,22 @@ var_dump($usd->mul('2'));
 var_dump($usd->div('2'));
 ```
 
+### Convert to another country
+
+The library supports conversion from one to another country in rate of presented by another country.
+
+To convert just call cnv methods as follows in example.
+
+Example:
+
+```php
+$xrp = Money::fromAmount('23.00243', 'XRP');
+$rate = Money::fromAmount('0.51', 'USD'); // How much for 1 XRP
+
+// Dumps "11.73"
+var_dump($xrp->cnv($rate));
+```
+
 ### Comparing operations
 
 All comparing operations are named as bash-like style.
@@ -171,6 +187,7 @@ This library has no other code dependencies and kept as simple as possible.
 - [x] Cannot create no config
 - [x] Add sub operations
 - [x] Mul div operations
+- [x] Convert to another currency
 - [x] Cmp operations
 - [x] Cannot add sub different currency
 - [x] Cannot compare different currency

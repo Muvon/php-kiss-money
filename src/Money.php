@@ -276,6 +276,21 @@ final class Money {
   }
 
   /**
+   * Convert current currency value to another one
+   * It creates new Money objectu using rate provides as argument
+   *
+   * @param self $Rate
+   *  Another currency value per one current currency (rate)
+   * @return self New money object
+   */
+  public function cnv(self $Rate): self {
+    return static::fromAmount(
+      bcmul($this->getAmount(), $Rate->getAmount(), $Rate->fraction),
+      $Rate->getCurrency()
+    );
+  }
+
+  /**
    * Get current amount of money with configured fraction for currency
    *
    * @return string

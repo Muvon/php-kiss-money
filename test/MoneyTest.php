@@ -31,6 +31,13 @@ final class MoneyTest extends TestCase
     ]
   ];
 
+  protected $cnv_ops = [
+    [['2.04', 'USD'], ['10.3', 'XRP'], ['21.012000', 'XRP']],
+    [['0.5', 'XRP'], ['0.34', 'USD'], ['0.17', 'USD']],
+    [['20.5345', 'XRP'], ['0.34', 'USD'], ['6.98', 'USD']],
+    [['3.000231', 'XRP'], ['0.43', 'USD'], ['1.29', 'USD']],
+  ];
+
   protected $cmp_ops = [
     'eq' => [
       [['1.03', 'USD'], ['1.03', 'USD']],
@@ -152,6 +159,23 @@ final class MoneyTest extends TestCase
     }
   }
 
+  public function testConvertToAnotherCurrency() {
+    foreach ($this->cnv_ops as $test) {
+      $money = Money::fromAmount(...$test[0]);
+      $rate = Money::fromAmount(...$test[1]);
+      $result = $money->cnv($rate);
+
+      $this->assertInstanceOf(Money::class, $result);
+      $this->assertNotEquals($money, $result);
+      $this->assertNotEquals($rate, $result);
+
+      $expect = Money::fromAmount(...$test[2]);
+      $this->assertEquals($expect->getValue(), $result->getValue());
+      // $this->assertEquals($expect->getCurrency(), $result->getCurrency());
+    }
+  }
+
+
   public function testCmpOperations() {
     foreach ($this->cmp_ops as $operation => $tests) {
       foreach ($tests as $test) {
@@ -230,6 +254,7 @@ final class MoneyTest extends TestCase
     $this->assertEquals(true, Money::hasCurrency('XRP'));
     $this->assertEquals(false, Money::hasCurrency('TTT'));
   }
+
   public function testCanUseAsString() {
     $usd = Money::fromAmount('0.01', 'USD');
     $this->assertEquals('0.01 USD', (string) $usd);
