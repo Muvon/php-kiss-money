@@ -279,6 +279,10 @@ final class Money {
    * @return self New money object
    */
   public function cnv(self $Rate): self {
+    if ($this->currency === $Rate->getCurrency()) {
+      throw new Exception('Cannot convert value of same currency to itself');
+    }
+
     return static::fromAmount(
       bcmul($this->getAmount(), $Rate->getAmount(), $Rate->fraction),
       $Rate->getCurrency()
