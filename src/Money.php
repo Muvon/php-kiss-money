@@ -135,8 +135,7 @@ final class Money {
    */
   public function add(self $Money): self {
     $this->validateCurrency($Money);
-    $this->value = gmp_strval(gmp_add($this->value, $Money->getValue()));
-    return $this;
+    return static::fromValue(gmp_strval(gmp_add($this->value, $Money->getValue())), $this->currency);
   }
 
   /**
@@ -147,8 +146,7 @@ final class Money {
    */
   public function sub(self $Money): self {
     $this->validateCurrency($Money);
-    $this->value = gmp_strval(gmp_sub($this->value, $Money->getValue()));
-    return $this;
+    return static::fromValue(gmp_strval(gmp_sub($this->value, $Money->getValue())), $this->currency);
   }
 
   /**
@@ -157,14 +155,25 @@ final class Money {
    * @param string $factor
    * @return self
    */
-  public function mul(string $factor): self {
-    $this->value = str_contains($factor, '.')
-      ? bcmul($this->value, $factor, 0)
-      : gmp_strval(gmp_mul($this->value, $factor))
-    ;
-    return $this;
+   public function mul(string|self $factor): self {
+    return static::fromValue(
+      bcdiv($this->value, $this->adaptFactor($factor)->getAmount(), 0),
+      $this->currency
+    );
   }
 
+  /**
+   * Run division by factor
+   *
+   * @param string $factor
+   * @return self
+   */
+   public function div(string|self $factor): self {
+    return static::fromValue(
+      bcdiv($this->value, $this->adaptFactor($factor)->getAmount(), 0),
+      $this->currency
+    );
+  }
 
   // We use bash like syntax for comparing number
 
@@ -262,20 +271,6 @@ final class Money {
   }
 
   /**
-   * Run division by factor
-   *
-   * @param string $factor
-   * @return self
-   */
-  public function div(string $factor): self {
-    $this->value = str_contains($factor, '.')
-      ? bcdiv($this->value, $factor, 0)
-      : gmp_strval(gmp_div($this->value, $factor))
-    ;
-    return $this;
-  }
-
-  /**
    * Convert current currency value to another one
    * It creates new Money objectu using rate provides as argument
    *
@@ -365,5 +360,15 @@ final class Money {
    */
   protected function valueToAmount(string $value): string {
     return bcdiv($value, $this->value_per_amount, $this->fraction);
+  }
+
+  protected function adaptFactor(string|self $factor): self {
+    if (!$factor instanceof self) {
+      $factor = static::fromAmount($factor, $this->currency);
+    } else {
+      $this->validateCurrency($factor);
+    }
+
+    return $factor;
   }
 }
