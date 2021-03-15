@@ -277,22 +277,22 @@ final class Money {
   /**
   * Detect rate using total price and unit price to wanted currency
   *
-  * @param self $Total
-  * @param self $Unit
+  * @param self $Source
+  * @param self $Target
   * @param string $currency
   * @return self
   */
-  public static function rate(self $Total, self $Unit, string $currency): self {
-    if ($Total->getCurrency() !== $Unit->getCurrency()) {
+  public static function rate(self $Source, self $Target, string $currency): self {
+    if ($Source->getCurrency() !== $Target->getCurrency()) {
       throw new Exception('Cannot get rate using different currencies');
     }
 
-    if ($Total->getCurrency() === $currency) {
+    if ($Source->getCurrency() === $currency) {
       throw new Exception('Cannot get rate to itself');
     }
 
     return Money::fromAmount(
-      bcdiv($Total->getValue(), $Unit->getValue(), static::$currency_map[$currency]['fraction']),
+      bcdiv($Source->getValue(), $Target->getValue(), static::$currency_map[$currency]['fraction']),
       $currency
     );
   }

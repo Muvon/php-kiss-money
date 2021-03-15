@@ -117,11 +117,11 @@ To make conversions easier you can also create your rate using 2 same currency o
 Example:
 
 ```php
-$Total = Money::fromAount('10', 'USD');
-$Unit = Money::fromAmount('0.5', 'USD');
+$Source = Money::fromAmount('0.5', 'USD');
+$Target = Money::fromAount('10', 'USD');
 
 // Dumps object with rate "20"
-var_dump(Money::rate($Total, $Unit, 'XRP'));
+var_dump(Money::rate($Source, $Target, 'XRP'));
 ```
 
 ### Comparing operations
