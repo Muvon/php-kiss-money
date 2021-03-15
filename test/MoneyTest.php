@@ -175,6 +175,13 @@ final class MoneyTest extends TestCase
     }
   }
 
+  public function testCannotConvertSameCurrency() {
+    $money = Money::fromAmount('1.23', 'USD');
+    $rate = Money::fromAmount('0.3', 'USD');
+    $this->expectException(Exception::class);
+    $money->cnv($rate);
+  }
+  
 
   public function testCmpOperations() {
     foreach ($this->cmp_ops as $operation => $tests) {
