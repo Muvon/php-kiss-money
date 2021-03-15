@@ -181,7 +181,21 @@ final class MoneyTest extends TestCase
     $this->expectException(Exception::class);
     $money->cnv($rate);
   }
-  
+
+  public function testResultIsImmutable() {
+    $left_args = ['1.043200', 'XRP'];
+    $right_args = ['1.432400', 'XRP'];
+    $left = Money::fromAmount(...$left_args);
+    $right = Money::fromAmount(...$right_args);
+
+    foreach (['mul', 'div', 'add', 'sub'] as $op) {
+      $result = $left->$op($right);
+      $this->assertEquals($left_args[0], $left->getAmount());
+      $this->assertEquals($left_args[1], $left->getCurrency());
+      $this->assertEquals($right_args[0], $right->getAmount());
+      $this->assertEquals($right_args[1], $right->getCurrency());
+    }
+  }
 
   public function testCmpOperations() {
     foreach ($this->cmp_ops as $operation => $tests) {
