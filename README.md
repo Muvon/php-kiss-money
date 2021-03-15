@@ -112,6 +112,18 @@ $rate = Money::fromAmount('0.51', 'USD'); // How much for 1 XRP
 var_dump($xrp->cnv($rate));
 ```
 
+To make conversions easier you can also create your rate using 2 same currency objects.
+
+Example:
+
+```php
+$Total = Money::fromAount('10', 'USD');
+$Unit = Money::fromAmount('0.5', 'USD');
+
+// Dumps object with rate "20"
+var_dump(Money::rate($Total, $Unit, 'XRP'));
+```
+
 ### Comparing operations
 
 All comparing operations are named as bash-like style.
