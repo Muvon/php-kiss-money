@@ -161,7 +161,7 @@ final class Money {
    */
    public function mul(string|self $factor): self {
     return static::fromValue(
-      bcdiv($this->value, $this->adaptFactor($factor)->getAmount(), 0),
+      bcmul($this->value, $this->adaptFactor($factor)->getAmount(), 0),
       $this->currency
     );
   }
