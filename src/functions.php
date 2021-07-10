@@ -12,13 +12,9 @@ namespace Muvon\KISS;
  *   String value of float representation with fraction applied
  */
 function money_format(string $value, int $fraction, bool $trim_trailing = false): string {
-  $a = str_pad($value, $fraction, '0', STR_PAD_LEFT);
-  $l = strlen($a);
-
-  $a[$l - $fraction] = '.';
-  if ($a[0] === '.') {
-    $a = '0' . $a;
-  }
+  $l = strlen($value);
+  $a = $l > $fraction ? $value : str_repeat('0', $fraction - $l + 1) . $value;
+  $a = substr_replace($a, '.', -$fraction, 0);
 
   return $trim_trailing ? rtrim($a, '.0') : $a;
 }

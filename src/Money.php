@@ -389,7 +389,7 @@ final class Money {
    * @return string
    */
   protected function valueToAmount(string $value): string {
-    return bcdiv($value, $this->value_per_amount, $this->fraction);
+    return money_format($value, $this->fraction);
   }
 
   protected function adaptFactor(string|self $factor): self {
