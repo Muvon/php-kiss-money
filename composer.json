@@ -24,6 +24,9 @@
   "autoload": {
     "psr-4": {
       "Muvon\\KISS\\": "src/"
-    }
+    },
+    "files": [
+      "src/functions.php"
+    ]
   }
 }
