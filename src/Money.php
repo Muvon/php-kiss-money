@@ -378,7 +378,7 @@ final class Money {
    * @return string
    */
   protected function amountToValue(string $amount): string {
-    return bcmul($amount, $this->value_per_amount, 0);
+    return money_a2v($amount, $this->fraction);
   }
 
   /**
@@ -389,7 +389,7 @@ final class Money {
    * @return string
    */
   protected function valueToAmount(string $value): string {
-    return money_format($value, $this->fraction);
+    return money_v2a($value, $this->fraction);
   }
 
   protected function adaptFactor(string|self $factor): self {
