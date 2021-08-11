@@ -20,7 +20,7 @@ function money_v2a(string $value, int $fraction, bool $trim_trailing = false): s
   $a = $l > $fraction ? $value : str_repeat('0', $fraction - $l + 1) . $value;
   $a = substr_replace($a, '.', -$fraction, 0);
 
-  return ($is_negative ? '-' : '') . ($trim_trailing ? (rtrim($a, '.0') ?: '0') : $a);
+  return ($is_negative ? '-' : '') . ($trim_trailing  ? (rtrim(rtrim($a, '0'), '.') ?: '0') : $a);
 }
 
 // Same function to fast up another way conversion
