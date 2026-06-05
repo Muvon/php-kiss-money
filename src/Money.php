@@ -10,14 +10,12 @@ final class Money {
    *  Current value (aka minor amount) of inited object
    * @property string $currency
    *  Current currency that we set for inited amount
-   * @property string $value_per_amount
-   *  How much cents we have in 1 amount
    * @property int $fraction
    *  Current currency fraction
    * @property array $currency_map
    *  Config for supported currency that we set on static init method call
    */
-  protected string $value, $currency, $value_per_amount;
+  protected string $value, $currency;
   protected int $fraction;
   protected static array $currency_map;
 
@@ -38,7 +36,6 @@ final class Money {
 
     $this->currency = $currency;
     $this->fraction = $fraction;
-    $this->value_per_amount = gmp_strval(gmp_pow(10, $fraction));
     $this->value = $this->amountToValue($amount);
   }
 
@@ -89,7 +86,9 @@ final class Money {
    */
   public static function fromValue(string|int $value, string $currency): self {
     $Money = static::zero($currency);
-    $Money->value = strval($value);
+    // Canonicalize: strip leading zeros and signed-zero so gmp_* (which reads
+    // leading zeros as octal) and bcmath agree on the stored value.
+    $Money->value = money_normalize(strval($value));
     return $Money;
   }
 
@@ -161,7 +160,7 @@ final class Money {
    */
    public function mul(string|self $factor): self {
     return static::fromValue(
-      bcmul($this->value, $this->adaptFactor($factor)->getAmount(), 0),
+      bcmul($this->value, $this->factorValue($factor), 0),
       $this->currency
     );
   }
@@ -173,8 +172,14 @@ final class Money {
    * @return self
    */
    public function div(string|self $factor): self {
+    $divisor = $this->factorValue($factor);
+    // No nonzero digit means the divisor is zero ("0", "0.00", "-0", ...).
+    // Throw our own Exception instead of leaking a native DivisionByZeroError.
+    if (!preg_match('/[1-9]/', $divisor)) {
+      throw new Exception('Cannot divide by zero');
+    }
     return static::fromValue(
-      bcdiv($this->value, $this->adaptFactor($factor)->getAmount(), 0),
+      bcdiv($this->value, $divisor, 0),
       $this->currency
     );
   }
@@ -291,6 +296,10 @@ final class Money {
       throw new Exception('Cannot get rate to itself');
     }
 
+    if ($Target->isZero()) {
+      throw new Exception('Cannot get rate with zero target value');
+    }
+
     return Money::fromAmount(
       bcdiv($Source->getValue(), $Target->getValue(), static::$currency_map[$currency]['fraction']),
       $currency
@@ -392,11 +401,19 @@ final class Money {
     return money_v2a($value, $this->fraction);
   }
 
-  protected function adaptFactor(string|self $factor): self {
-    if (!$factor instanceof self) {
-      $factor = static::fromAmount($factor, $this->currency);
-    } else {
+  /**
+   * Resolve a mul/div factor to a plain scalar string for bcmath.
+   * A string factor is used at full precision (only the final monetary result
+   * is truncated to the currency fraction). A Money factor must share the
+   * currency and contributes its own amount as the scalar.
+   *
+   * @param string|self $factor
+   * @return string
+   */
+  protected function factorValue(string|self $factor): string {
+    if ($factor instanceof self) {
       $this->validateCurrency($factor);
+      return $factor->getAmount();
     }
 
     return $factor;

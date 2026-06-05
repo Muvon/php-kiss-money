@@ -14,8 +14,8 @@ Money::init([
 
 $Money = Money::fromAmount('0.01', 'USD');
 
-// If we want to create from minor amount
-// $Money = Money::fromMinor('1', 'USD');
+// If we want to create from minor amount (aka value)
+// $Money = Money::fromValue('1', 'USD');
 // Get amount
 var_dump($Money->getAmount());
 
@@ -118,7 +118,7 @@ Example:
 
 ```php
 $Source = Money::fromAmount('0.5', 'USD');
-$Target = Money::fromAount('10', 'USD');
+$Target = Money::fromAmount('10', 'USD');
 
 // Dumps object with rate "20"
 var_dump(Money::rate($Source, $Target, 'XRP'));
