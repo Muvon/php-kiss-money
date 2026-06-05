@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.5.0] - 2026-06-05
+
+### 📋 Release Summary
+
+This release introduces the ability to create money objects directly from hexadecimal strings (f1dc6d48), providing greater flexibility in how monetary values are initialized.
+
+
+### ✨ New Features & Enhancements
+
+- **money**: add ability to create object from hex string `f1dc6d48`
+
 All notable changes to this project will be documented in this file.
 
 ## [0.4.4] - 2026-06-05
