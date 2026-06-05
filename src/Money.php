@@ -93,6 +93,35 @@ final class Money {
   }
 
   /**
+   * Create object from minor amount (aka value) given as a hexadecimal string
+   * The hex is converted to its decimal value and then stored the exact same
+   * unified way as fromValue. Accepts an optional sign and 0x/0X prefix,
+   * e.g. "ff", "0xFF", "-ff", "-0xFF".
+   *
+   * @param string $hex
+   * @param string $currency
+   * @return self
+   */
+  public static function fromHex(string $hex, string $currency): self {
+    $sign = '';
+    if (isset($hex[0]) && $hex[0] === '-') {
+      $sign = '-';
+      $hex = substr($hex, 1);
+    }
+    // gmp_init accepts a 0x prefix only on unsigned input, so strip it ourselves
+    // to support signed prefixed forms like "-0xff" uniformly.
+    if (strncasecmp($hex, '0x', 2) === 0) {
+      $hex = substr($hex, 2);
+    }
+    try {
+      $value = gmp_strval(gmp_init($hex, 16));
+    } catch (\ValueError $e) {
+      throw new Exception('Invalid hex value: ' . $hex);
+    }
+    return static::fromValue($sign . $value, $currency);
+  }
+
+  /**
    * Create zero value object
    *
    * @param string $currency

@@ -579,6 +579,62 @@ final class MoneyTest extends TestCase
     $this->assertSame('150', money_v2a('150', 0, true));
   }
 
+  // --- fromHex mirrors fromValue but parses a hexadecimal value ---
+
+  public function testFromHexBasic() {
+    $m = Money::fromHex('ff', 'USD');
+    $this->assertSame('255', $m->getValue());
+    $this->assertSame('2.55', $m->getAmount());
+    $this->assertEquals(Money::fromValue('255', 'USD'), $m);
+  }
+
+  public function testFromHexAcceptsPrefixAndCase() {
+    $this->assertSame('255', Money::fromHex('0xff', 'USD')->getValue());
+    $this->assertSame('255', Money::fromHex('0XFF', 'USD')->getValue());
+    $this->assertSame('255', Money::fromHex('FF', 'USD')->getValue());
+    // Leading zeros must not be read as octal (the fromValue path normalizes).
+    $this->assertSame('255', Money::fromHex('00ff', 'USD')->getValue());
+  }
+
+  public function testFromHexNegative() {
+    $this->assertSame('-255', Money::fromHex('-ff', 'USD')->getValue());
+    $this->assertSame('-255', Money::fromHex('-0xff', 'USD')->getValue());
+    $this->assertSame('-2.55', Money::fromHex('-ff', 'USD')->getAmount());
+  }
+
+  public function testFromHexZero() {
+    $this->assertSame('0', Money::fromHex('0', 'USD')->getValue());
+    $this->assertSame('0', Money::fromHex('-0', 'USD')->getValue());
+    $this->assertSame('0', Money::fromHex('0x0', 'USD')->getValue());
+    $this->assertEquals(Money::zero('USD'), Money::fromHex('0', 'USD'));
+  }
+
+  public function testFromHexLargeNumber() {
+    // Arbitrary precision: well beyond 64-bit.
+    $m = Money::fromHex('ffffffffffffffffff', 'USD');
+    $this->assertSame('4722366482869645213695', $m->getValue());
+  }
+
+  public function testFromHexRespectsCurrencyFraction() {
+    $this->assertSame('255', Money::fromHex('ff', 'JPY')->getValue());
+    $this->assertSame('255', Money::fromHex('ff', 'JPY')->getAmount());
+  }
+
+  public static function invalidHexProvider(): array {
+    return [['g1'], ['xyz'], [''], ['0x'], ['-'], ['1.5']];
+  }
+
+  #[DataProvider('invalidHexProvider')]
+  public function testFromHexInvalidThrows(string $hex) {
+    $this->expectException(Exception::class);
+    Money::fromHex($hex, 'USD');
+  }
+
+  public function testFromHexNoConfigThrows() {
+    $this->expectException(Exception::class);
+    Money::fromHex('ff', 'EUR');
+  }
+
   public function testMoneyNormalize() {
     $this->assertSame('100', money_normalize('0100'));
     $this->assertSame('-100', money_normalize('-0100'));
